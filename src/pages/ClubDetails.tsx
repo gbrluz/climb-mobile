@@ -19,34 +19,13 @@ export const ClubDetails = () => {
 
   const { mutate: createBooking, isPending } = useCreateBooking();
 
-  // Debug: Estado inicial do componente
-  console.log('🚀 ClubDetails montado:', {
-    clubId: id,
-    isLoading,
-    hasError: !!error,
-    errorMessage: error?.message,
-    hasClub: !!club,
-    clubName: club?.name
-  });
-
   // Gera horários disponíveis baseado no clube e slot da quadra
   const generateTimeSlots = (court: any) => {
     const openingTime = club?.opening_time || '08:00';
     const closingTime = club?.closing_time || '22:00';
-    // Usa 60 minutos como padrão se slot_duration for undefined
     const slotDuration = court.slot_duration || 60;
 
-    console.log('🕐 Gerando horários:', {
-      club: club?.name,
-      openingTime,
-      closingTime,
-      slotDuration,
-      slotDurationOriginal: court.slot_duration,
-      court: court.name
-    });
-
     if (!slotDuration || slotDuration <= 0) {
-      console.error('❌ slot_duration inválido:', slotDuration);
       return [];
     }
 
@@ -67,7 +46,6 @@ export const ClubDetails = () => {
       currentMinutes += slotDuration;
     }
 
-    console.log('✅ Horários gerados:', slots.length, slots);
     return slots;
   };
 
@@ -102,38 +80,8 @@ export const ClubDetails = () => {
   if (error) return <ErrorPage message="Erro ao carregar clube" onRetry={() => refetch()} />;
   if (!club) return <ErrorPage message="Clube não encontrado" />;
 
-  // Debug: Log das quadras
-  console.log('🏟️ Clube carregado:', {
-    name: club.name,
-    totalCourts: club.courts?.length || 0,
-    courts: club.courts,
-    openingTime: club.opening_time,
-    closingTime: club.closing_time
-  });
-
   return (
     <>
-      {/* Debug Panel - Remove em produção */}
-      {import.meta.env.DEV && (
-        <div className="fixed top-0 left-0 right-0 bg-yellow-100 border-b-2 border-yellow-400 p-2 text-xs z-50 max-h-32 overflow-auto">
-          <div className="font-bold">🔍 DEBUG INFO:</div>
-          <div>Club ID: {id}</div>
-          <div>Loading: {isLoading ? '✅' : '❌'}</div>
-          <div>Error: {error ? `❌ ${error.message}` : '✅'}</div>
-          <div>Club: {club ? `✅ ${club.name}` : '❌'}</div>
-          <div>Courts Total: {club?.courts?.length || 0}</div>
-          <div>Courts Active (strict): {club?.courts?.filter((c: any) => c.is_active === true).length || 0}</div>
-          <div>Courts Active (lenient): {club?.courts?.filter((c: any) => c.is_active !== false).length || 0}</div>
-          {club?.courts && club.courts.length > 0 && (
-            <div className="mt-1">
-              Courts: {club.courts.map((c: any) => {
-                const hasData = c.slot_duration && c.base_price && c.is_active !== undefined;
-                return `${c.name}(${hasData ? '✅' : '❌'} active:${c.is_active}, slot:${c.slot_duration}, price:${c.base_price})`;
-              }).join(' | ')}
-            </div>
-          )}
-        </div>
-      )}
       <div className="pb-24">
         {/* Header com Foto do Clube */}
         <div className="h-56 relative bg-gray-200">
@@ -171,30 +119,11 @@ export const ClubDetails = () => {
 
         {/* Listagem de Quadras e Seus Horários */}
         <h2 className="text-lg font-bold mb-4">Quadras Disponíveis</h2>
-        {(() => {
-          const totalCourts = club?.courts?.length || 0;
-          const activeCourts = club?.courts?.filter((c: any) => c.is_active) || [];
-          console.log('📋 Filtrando quadras:', {
-            total: totalCourts,
-            ativas: activeCourts.length,
-            todasQuadras: club?.courts,
-            courtDetails: club?.courts?.map((c: any) => ({
-              id: c.id,
-              name: c.name,
-              is_active: c.is_active,
-              slot_duration: c.slot_duration,
-              base_price: c.base_price
-            }))
-          });
-          return null;
-        })()}
         {club?.courts && club.courts.length > 0 ? (
           (() => {
-            // Trata undefined como ativo (para compatibilidade com dados incompletos)
             const activeCourts = club.courts.filter((c: any) => c.is_active !== false);
 
             if (activeCourts.length === 0) {
-              console.warn('⚠️ Nenhuma quadra ativa encontrada');
               return (
                 <div className="text-center py-8 text-gray-500">
                   <p>Nenhuma quadra ativa no momento</p>
@@ -203,19 +132,8 @@ export const ClubDetails = () => {
               );
             }
 
-            return activeCourts.map((court: any) => {
-            console.log('🎾 Renderizando quadra:', court.name, court);
-
-            // Detecta se os dados estão incompletos
-            const hasIncompleteData = !court.slot_duration || !court.base_price;
-
-            return (
+            return activeCourts.map((court: any) => (
             <div key={court.id} className="bg-white p-4 rounded-xl shadow-sm mb-4 border border-gray-100">
-              {hasIncompleteData && (
-                <div className="mb-2 p-2 bg-orange-50 border border-orange-200 rounded text-xs text-orange-700">
-                  ⚠️ Dados incompletos no backend (usando valores padrão)
-                </div>
-              )}
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="font-bold text-gray-800">{court.name}</h3>
@@ -246,8 +164,7 @@ export const ClubDetails = () => {
   </div>
 </div>
             </div>
-          );
-          });
+          ));
           })()
         ) : (
           <div className="text-center py-8 text-gray-500">
