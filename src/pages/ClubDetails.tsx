@@ -90,6 +90,15 @@ export const ClubDetails = () => {
   if (error) return <ErrorPage message="Erro ao carregar clube" onRetry={() => refetch()} />;
   if (!club) return <ErrorPage message="Clube não encontrado" />;
 
+  // Debug: Log das quadras
+  console.log('🏟️ Clube carregado:', {
+    name: club.name,
+    totalCourts: club.courts?.length || 0,
+    courts: club.courts,
+    openingTime: club.opening_time,
+    closingTime: club.closing_time
+  });
+
   return (
     <>
       <div className="pb-24">
@@ -129,8 +138,18 @@ export const ClubDetails = () => {
 
         {/* Listagem de Quadras e Seus Horários */}
         <h2 className="text-lg font-bold mb-4">Quadras Disponíveis</h2>
+        {(() => {
+          console.log('📋 Filtrando quadras:', {
+            total: club?.courts?.length || 0,
+            ativas: club?.courts?.filter((c: any) => c.is_active).length || 0,
+            todasQuadras: club?.courts
+          });
+          return null;
+        })()}
         {club?.courts && club.courts.length > 0 ? (
-          club.courts.filter((c: any) => c.is_active).map((court: any) => (
+          club.courts.filter((c: any) => c.is_active).map((court: any) => {
+            console.log('🎾 Renderizando quadra:', court.name, court);
+            return (
             <div key={court.id} className="bg-white p-4 rounded-xl shadow-sm mb-4 border border-gray-100">
               <div className="flex justify-between items-center">
                 <div>
@@ -165,7 +184,8 @@ export const ClubDetails = () => {
                  {/* Slots de horários */}
               </div>
             </div>
-          ))
+          );
+          })
         ) : (
           <div className="text-gray-500">Nenhuma quadra disponível</div>
         )}
