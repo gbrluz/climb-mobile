@@ -6,7 +6,7 @@ import { useCreateBooking } from '../hooks/useCreateBooking';
 import { BookingModal } from '../components/ui/BookingModal';
 import { LoadingPage } from '../components/ui/LoadingSpinner';
 import { ErrorPage } from '../components/ui/ErrorMessage';
-import { Court } from '../types';
+import type { Court } from '../types';
 
 export const ClubDetails = () => {
   const { id } = useParams();

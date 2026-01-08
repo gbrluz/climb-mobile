@@ -1,5 +1,5 @@
 import { X, Calendar, Clock, MapPin, CreditCard } from 'lucide-react';
-import { Court, Club } from '../../types';
+import type { Court, Club } from '../../types';
 import { useState } from 'react';
 
 interface BookingModalProps {

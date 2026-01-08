@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { bookingsApi } from '../api/instances';
-import { Club, Court, ClubWithCourts } from '../types';
+import type { Club, Court, ClubWithCourts } from '../types';
 
 export const useClubDetails = (clubId: string) => {
   return useQuery<ClubWithCourts>({

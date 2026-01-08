@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { bookingsApi } from '../api/instances';
-import { User } from '../types';
+import type { User } from '../types';
 
 export const useUserProfile = () => {
   return useQuery<User>({

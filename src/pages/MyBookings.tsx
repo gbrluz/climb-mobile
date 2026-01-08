@@ -3,7 +3,7 @@ import { useCancelBooking } from '../hooks/useCancelBooking';
 import { LoadingPage } from '../components/ui/LoadingSpinner';
 import { ErrorPage } from '../components/ui/ErrorMessage';
 import { Calendar, Clock, MapPin, XCircle, CheckCircle } from 'lucide-react';
-import { Booking } from '../types';
+import type { Booking } from '../types';
 import { useState } from 'react';
 
 export const MyBookings = () => {

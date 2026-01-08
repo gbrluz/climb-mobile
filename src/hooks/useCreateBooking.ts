@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { bookingsApi } from '../api/instances';
-import { Booking, CreateBookingDto } from '../types';
+import type { Booking, CreateBookingDto } from '../types';
 
 export const useCreateBooking = () => {
   const queryClient = useQueryClient();
