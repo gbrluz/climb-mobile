@@ -1,47 +1,79 @@
-// src/pages/ClubDetails.tsx
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useClubDetails } from '../hooks/useClubDetails';
-import { Calendar, Clock } from 'lucide-react';
+import { Calendar, Clock, ChevronLeft } from 'lucide-react';
 import { useCreateBooking } from '../hooks/useCreateBooking';
+import { BookingModal } from '../components/ui/BookingModal';
+import { LoadingPage } from '../components/ui/LoadingSpinner';
+import { ErrorPage } from '../components/ui/ErrorMessage';
+import { Court } from '../types';
 
 export const ClubDetails = () => {
   const { id } = useParams();
-  const { data: club, isLoading } = useClubDetails(id!);
+  const navigate = useNavigate();
+  const { data: club, isLoading, error, refetch } = useClubDetails(id!);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedCourt, setSelectedCourt] = useState<Court | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string>('');
 
-  const { mutate: createBooking } = useCreateBooking();
+  const { mutate: createBooking, isPending } = useCreateBooking();
 
-const handleOpenConfirmation = (court: any, time: string) => {
-  const confirmReserva = window.confirm(`Deseja confirmar a reserva na ${court.name} às ${time}?`);
-  
-  if (confirmReserva) {
-    // Formata a data selecionada + horário para o ISO que o backend espera
-    const startTime = `${selectedDate}T${time}:00.000Z`;
-    
+  const handleOpenConfirmation = (court: Court, time: string) => {
+    setSelectedCourt(court);
+    setSelectedTime(time);
+    setModalOpen(true);
+  };
+
+  const handleConfirmBooking = (duration: number) => {
+    if (!selectedCourt) return;
+
+    const startTime = `${selectedDate}T${selectedTime}:00.000Z`;
+
     createBooking({
-      court_id: court.id,
-      start_time: startTime
+      court_id: selectedCourt.id,
+      start_time: startTime,
+      duration_minutes: duration
+    }, {
+      onSuccess: () => {
+        setModalOpen(false);
+        alert('Reserva realizada com sucesso!');
+        navigate('/find-matches'); // Navega para minhas reservas
+      },
+      onError: (error: any) => {
+        alert(`Erro ao reservar: ${error.response?.data?.message || 'Tente novamente'}`);
+      }
     });
-  }
-};
+  };
 
-  if (isLoading) return <div className="p-6">Carregando clube...</div>;
+  if (isLoading) return <LoadingPage message="Carregando clube..." />;
+  if (error) return <ErrorPage message="Erro ao carregar clube" onRetry={() => refetch()} />;
+  if (!club) return <ErrorPage message="Clube não encontrado" />;
 
   return (
-    <div className="pb-24">
-      {/* Header com Foto do Clube */}
-      <div className="h-56 relative bg-gray-200">
-        <img 
-          src={club?.images?.[0] || ''} 
-          className="w-full h-full object-cover" 
-        />
-        <div className="absolute inset-0 bg-linear-to-t from-black/70 to-transparent" />
-        <div className="absolute bottom-4 left-4 text-white">
-          <h1 className="text-2xl font-black">{club?.name}</h1>
-          <p className="text-sm opacity-90">{club?.city}, {club?.state}</p>
+    <>
+      <div className="pb-24">
+        {/* Header com Foto do Clube */}
+        <div className="h-56 relative bg-gray-200">
+          <img
+            src={club?.images?.[0] || ''}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+
+          {/* Botão Voltar */}
+          <button
+            onClick={() => navigate(-1)}
+            className="absolute top-4 left-4 p-2 bg-white/20 backdrop-blur-sm rounded-full active:bg-white/30"
+          >
+            <ChevronLeft size={24} className="text-white" />
+          </button>
+
+          <div className="absolute bottom-4 left-4 text-white">
+            <h1 className="text-2xl font-black">{club?.name}</h1>
+            <p className="text-sm opacity-90">{club?.city}, {club?.state}</p>
+          </div>
         </div>
-      </div>
 
       <div className="p-4">
         {/* Seletor de Data Simples */}
@@ -94,13 +126,21 @@ const handleOpenConfirmation = (court: any, time: string) => {
           <div className="text-gray-500">Nenhuma quadra disponível</div>
         )}
       </div>
-    </div>
-  );
+      </div>
 
-  function handleReservation(courtId: string, time: string) {
-    // Aqui enviaremos para o backend usando o seu create-booking.dto.ts
-    const startTime = `${selectedDate}T${time}:00.000Z`;
-    console.log("Reservando quadra:", courtId, "no horário:", startTime);
-    alert(`Iniciando reserva para ${time}`);
-  }
+      {/* Modal de Confirmação */}
+      {selectedCourt && club && (
+        <BookingModal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          court={selectedCourt}
+          club={club}
+          selectedDate={selectedDate}
+          selectedTime={selectedTime}
+          onConfirm={handleConfirmBooking}
+          isLoading={isPending}
+        />
+      )}
+    </>
+  );
 };

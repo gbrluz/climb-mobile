@@ -1,13 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { bookingsApi } from '../api/instances';
-import { Booking, CreateBookingDto } from '../types';
 
-export const useCreateBooking = () => {
+export const useCancelBooking = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (bookingData: CreateBookingDto) => {
-      const { data } = await bookingsApi.post<Booking>('/bookings', bookingData);
+    mutationFn: async (bookingId: string) => {
+      const { data } = await bookingsApi.delete(`/bookings/${bookingId}`);
       return data;
     },
     onSuccess: () => {
@@ -15,7 +14,7 @@ export const useCreateBooking = () => {
       queryClient.invalidateQueries({ queryKey: ['bookings'] });
     },
     onError: (error: any) => {
-      console.error('Erro ao criar reserva:', error);
+      console.error('Erro ao cancelar reserva:', error);
       throw error;
     }
   });

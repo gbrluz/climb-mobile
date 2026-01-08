@@ -4,8 +4,8 @@ import { BottomNav } from './components/layout/BottomNav';
 import { Home } from './pages/Home';
 import { ClubDetails } from './pages/ClubDetails';
 import { ClubsList } from './pages/ClubsList';
-
-// Importe outras páginas conforme for criando (ClubDetails, Profile, etc.)
+import { MyBookings } from './pages/MyBookings';
+import { Profile } from './pages/Profile';
 
 // Inicializa o cliente do React Query para gerenciar cache das APIs
 const queryClient = new QueryClient();
@@ -21,9 +21,9 @@ function App() {
           <main className="flex-1 overflow-y-auto px-4 pt-safe-top pb-20">
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/find-matches" element={<div>Página de Partidas</div>} />
-              <Route path="/auctions" element={<div>Página de Leilões</div>} />
-              <Route path="/profile" element={<div>Perfil do Usuário</div>} />
+              <Route path="/find-matches" element={<MyBookings />} />
+              <Route path="/auctions" element={<div className="p-6 text-center"><h2 className="text-xl font-bold">Leilões em breve!</h2></div>} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/club/:id" element={<ClubDetails />} />
               <Route path="/explore" element={<ClubsList />} />
             </Routes>
