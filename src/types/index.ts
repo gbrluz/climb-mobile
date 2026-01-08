@@ -21,13 +21,11 @@ export type Court = {
   id: string;
   club_id: string;
   name: string;
-  type: 'padel' | 'tennis' | 'beach_tennis' | 'squash';
-  indoor: boolean;
-  base_price: number;
-  status: 'active' | 'maintenance' | 'inactive';
-  features?: string[];
-  created_at?: string;
-  updated_at?: string;
+  type: 'padel' | 'tennis' | 'beach_tennis' | 'squash' | null;
+  is_indoor: boolean;
+  base_price: string; // Decimal vem como string da API
+  is_active: boolean;
+  slot_duration: number; // Duração do slot em minutos
 }
 
 export type Booking = {

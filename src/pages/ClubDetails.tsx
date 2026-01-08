@@ -93,9 +93,14 @@ export const ClubDetails = () => {
           club.courts.map((court: any) => (
             <div key={court.id} className="bg-white p-4 rounded-xl shadow-sm mb-4 border border-gray-100">
               <div className="flex justify-between items-center">
-                <h3 className="font-bold text-gray-800">{court.name}</h3>
+                <div>
+                  <h3 className="font-bold text-gray-800">{court.name}</h3>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {court.is_indoor ? '🏠 Coberta' : '☀️ Descoberta'} · {court.type || 'Padel'}
+                  </p>
+                </div>
                 <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs font-bold">
-                   R$ {court.base_price}/h
+                   R$ {parseFloat(court.base_price).toFixed(0)}/h
                 </span>
               </div>
               

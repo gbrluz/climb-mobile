@@ -38,7 +38,8 @@ export const BookingModal = ({
 
   const calculateTotal = () => {
     const hours = duration / 60;
-    return (court.base_price * hours).toFixed(2);
+    const pricePerHour = parseFloat(court.base_price);
+    return (pricePerHour * hours).toFixed(2);
   };
 
   const handleConfirm = () => {
@@ -115,7 +116,7 @@ export const BookingModal = ({
           <div className="bg-gray-50 rounded-2xl p-4 space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Valor por hora</span>
-              <span className="font-bold text-gray-900">R$ {court.base_price.toFixed(2)}</span>
+              <span className="font-bold text-gray-900">R$ {parseFloat(court.base_price).toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Duração</span>
