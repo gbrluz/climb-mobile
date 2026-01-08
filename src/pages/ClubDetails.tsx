@@ -25,6 +25,19 @@ export const ClubDetails = () => {
     const closingTime = club?.closing_time || '22:00';
     const slotDuration = court.slot_duration;
 
+    console.log('🕐 Gerando horários:', {
+      club: club?.name,
+      openingTime,
+      closingTime,
+      slotDuration,
+      court: court.name
+    });
+
+    if (!slotDuration || slotDuration <= 0) {
+      console.error('❌ slot_duration inválido:', slotDuration);
+      return [];
+    }
+
     const [openHour, openMin] = openingTime.split(':').map(Number);
     const [closeHour, closeMin] = closingTime.split(':').map(Number);
 
@@ -42,6 +55,7 @@ export const ClubDetails = () => {
       currentMinutes += slotDuration;
     }
 
+    console.log('✅ Horários gerados:', slots.length, slots);
     return slots;
   };
 
@@ -116,7 +130,7 @@ export const ClubDetails = () => {
         {/* Listagem de Quadras e Seus Horários */}
         <h2 className="text-lg font-bold mb-4">Quadras Disponíveis</h2>
         {club?.courts && club.courts.length > 0 ? (
-          club.courts.map((court: any) => (
+          club.courts.filter((c: any) => c.is_active).map((court: any) => (
             <div key={court.id} className="bg-white p-4 rounded-xl shadow-sm mb-4 border border-gray-100">
               <div className="flex justify-between items-center">
                 <div>
@@ -126,7 +140,7 @@ export const ClubDetails = () => {
                   </p>
                 </div>
                 <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs font-bold">
-                   R$ {parseFloat(court.base_price).toFixed(0)}/{court.slot_duration}min
+                   R$ {court.base_price ? parseFloat(court.base_price).toFixed(0) : '0'}/{court.slot_duration || 0}min
                 </span>
               </div>
               
