@@ -111,6 +111,25 @@ export const ClubDetails = () => {
 
   return (
     <>
+      {/* Debug Panel - Remove em produção */}
+      {import.meta.env.DEV && (
+        <div className="fixed top-0 left-0 right-0 bg-yellow-100 border-b-2 border-yellow-400 p-2 text-xs z-50 max-h-32 overflow-auto">
+          <div className="font-bold">🔍 DEBUG INFO:</div>
+          <div>Club ID: {id}</div>
+          <div>Loading: {isLoading ? '✅' : '❌'}</div>
+          <div>Error: {error ? `❌ ${error.message}` : '✅'}</div>
+          <div>Club: {club ? `✅ ${club.name}` : '❌'}</div>
+          <div>Courts Total: {club?.courts?.length || 0}</div>
+          <div>Courts Active: {club?.courts?.filter((c: any) => c.is_active).length || 0}</div>
+          {club?.courts && club.courts.length > 0 && (
+            <div className="mt-1">
+              Courts: {club.courts.map((c: any) =>
+                `${c.name}(active:${c.is_active}, slot:${c.slot_duration}min, price:R$${c.base_price})`
+              ).join(' | ')}
+            </div>
+          )}
+        </div>
+      )}
       <div className="pb-24">
         {/* Header com Foto do Clube */}
         <div className="h-56 relative bg-gray-200">
