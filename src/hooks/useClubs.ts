@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { bookingsApi } from '../api/instances';
-import { Club } from '../types';
+import type { Club } from '../types';
 
 export const useClubs = () => {
   return useQuery<Club[]>({
