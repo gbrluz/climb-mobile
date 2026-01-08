@@ -23,7 +23,8 @@ export const BookingModal = ({
   onConfirm,
   isLoading
 }: BookingModalProps) => {
-  const [duration, setDuration] = useState(60); // 60 minutos por padrão
+  // Usa o slot_duration da quadra como padrão
+  const [duration, setDuration] = useState(court.slot_duration);
 
   if (!isOpen) return null;
 
@@ -96,7 +97,9 @@ export const BookingModal = ({
               Duração
             </label>
             <div className="grid grid-cols-3 gap-2">
-              {[60, 90, 120].map((mins) => (
+              {[court.slot_duration, court.slot_duration * 2, court.slot_duration * 3]
+                .filter(mins => mins <= 180) // Máximo 3 horas
+                .map((mins) => (
                 <button
                   key={mins}
                   onClick={() => setDuration(mins)}

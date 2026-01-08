@@ -19,6 +19,32 @@ export const ClubDetails = () => {
 
   const { mutate: createBooking, isPending } = useCreateBooking();
 
+  // Gera horários disponíveis baseado no clube e slot da quadra
+  const generateTimeSlots = (court: Court) => {
+    const openingTime = club?.opening_time || '08:00';
+    const closingTime = club?.closing_time || '22:00';
+    const slotDuration = court.slot_duration;
+
+    const [openHour, openMin] = openingTime.split(':').map(Number);
+    const [closeHour, closeMin] = closingTime.split(':').map(Number);
+
+    const startMinutes = openHour * 60 + openMin;
+    const endMinutes = closeHour * 60 + closeMin;
+
+    const slots: string[] = [];
+    let currentMinutes = startMinutes;
+
+    while (currentMinutes + slotDuration <= endMinutes) {
+      const hours = Math.floor(currentMinutes / 60);
+      const minutes = currentMinutes % 60;
+      const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+      slots.push(timeString);
+      currentMinutes += slotDuration;
+    }
+
+    return slots;
+  };
+
   const handleOpenConfirmation = (court: Court, time: string) => {
     setSelectedCourt(court);
     setSelectedTime(time);
@@ -96,11 +122,11 @@ export const ClubDetails = () => {
                 <div>
                   <h3 className="font-bold text-gray-800">{court.name}</h3>
                   <p className="text-xs text-gray-500 mt-1">
-                    {court.is_indoor ? '🏠 Coberta' : '☀️ Descoberta'} · {court.type || 'Padel'}
+                    {court.is_indoor ? '🏠 Coberta' : '☀️ Descoberta'} · {court.type ? court.type.charAt(0).toUpperCase() + court.type.slice(1) : 'Padel'}
                   </p>
                 </div>
                 <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs font-bold">
-                   R$ {parseFloat(court.base_price).toFixed(0)}/h
+                   R$ {parseFloat(court.base_price).toFixed(0)}/{court.slot_duration}min
                 </span>
               </div>
               
@@ -110,8 +136,7 @@ export const ClubDetails = () => {
   </h4>
   
   <div className="grid grid-cols-4 gap-2">
-    {/* Simulando slots. No futuro, você buscará do seu AvailabilityService */}
-    {['08:00', '09:30', '11:00', '14:00', '15:30', '17:00', '18:30', '20:00'].map((time) => (
+    {generateTimeSlots(court).map((time) => (
       <button
         key={time}
         className="py-2 text-sm font-bold rounded-xl border border-blue-100 text-blue-700 bg-blue-50 active:bg-blue-600 active:text-white transition-all shadow-sm"

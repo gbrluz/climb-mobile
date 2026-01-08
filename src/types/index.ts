@@ -13,6 +13,8 @@ export type Club = {
   description?: string;
   amenities?: string[];
   rating?: number;
+  opening_time?: string; // Formato "HH:mm"
+  closing_time?: string; // Formato "HH:mm"
   created_at?: string;
   updated_at?: string;
 }
