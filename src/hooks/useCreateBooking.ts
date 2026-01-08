@@ -1,15 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { bookingsApi } from '../api/instances';
+import { ApiService } from '../services/api.service';
 import type { Booking, CreateBookingDto } from '../types';
 
 export const useCreateBooking = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (bookingData: CreateBookingDto) => {
-      const { data } = await bookingsApi.post<Booking>('/bookings', bookingData);
-      return data;
-    },
+    mutationFn: (bookingData: CreateBookingDto) => ApiService.createBooking(bookingData),
     onSuccess: () => {
       // Invalida a cache de bookings para recarregar a lista
       queryClient.invalidateQueries({ queryKey: ['bookings'] });

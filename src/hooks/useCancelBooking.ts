@@ -1,14 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { bookingsApi } from '../api/instances';
+import { ApiService } from '../services/api.service';
 
 export const useCancelBooking = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (bookingId: string) => {
-      const { data } = await bookingsApi.delete(`/bookings/${bookingId}`);
-      return data;
-    },
+    mutationFn: (bookingId: string) => ApiService.cancelBooking(bookingId),
     onSuccess: () => {
       // Invalida a cache de bookings para recarregar a lista
       queryClient.invalidateQueries({ queryKey: ['bookings'] });

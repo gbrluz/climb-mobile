@@ -1,20 +1,20 @@
 import { useQuery } from '@tanstack/react-query';
-import { bookingsApi } from '../api/instances';
-import type { Club, Court, ClubWithCourts } from '../types';
+import { ApiService } from '../services/api.service';
+import type { ClubWithCourts } from '../types';
 
 export const useClubDetails = (clubId: string) => {
   return useQuery<ClubWithCourts>({
     queryKey: ['club-details', clubId],
     queryFn: async () => {
       // 1. Busca os dados do clube
-      const clubRes = await bookingsApi.get<Club>(`/clubs/${clubId}`);
+      const club = await ApiService.getClubById(clubId);
       // 2. Busca as quadras vinculadas
-      const courtsRes = await bookingsApi.get<Court[]>(`/clubs/${clubId}/courts`);
+      const courts = await ApiService.getClubCourts(clubId);
 
       // Retorna um objeto unificado
       return {
-        ...clubRes.data,
-        courts: courtsRes.data
+        ...club,
+        courts
       };
     },
     enabled: !!clubId,
