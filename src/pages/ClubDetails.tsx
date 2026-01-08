@@ -19,6 +19,16 @@ export const ClubDetails = () => {
 
   const { mutate: createBooking, isPending } = useCreateBooking();
 
+  // Debug: Estado inicial do componente
+  console.log('🚀 ClubDetails montado:', {
+    clubId: id,
+    isLoading,
+    hasError: !!error,
+    errorMessage: error?.message,
+    hasClub: !!club,
+    clubName: club?.name
+  });
+
   // Gera horários disponíveis baseado no clube e slot da quadra
   const generateTimeSlots = (court: Court) => {
     const openingTime = club?.opening_time || '08:00';
@@ -139,15 +149,37 @@ export const ClubDetails = () => {
         {/* Listagem de Quadras e Seus Horários */}
         <h2 className="text-lg font-bold mb-4">Quadras Disponíveis</h2>
         {(() => {
+          const totalCourts = club?.courts?.length || 0;
+          const activeCourts = club?.courts?.filter((c: any) => c.is_active) || [];
           console.log('📋 Filtrando quadras:', {
-            total: club?.courts?.length || 0,
-            ativas: club?.courts?.filter((c: any) => c.is_active).length || 0,
-            todasQuadras: club?.courts
+            total: totalCourts,
+            ativas: activeCourts.length,
+            todasQuadras: club?.courts,
+            courtDetails: club?.courts?.map((c: any) => ({
+              id: c.id,
+              name: c.name,
+              is_active: c.is_active,
+              slot_duration: c.slot_duration,
+              base_price: c.base_price
+            }))
           });
           return null;
         })()}
         {club?.courts && club.courts.length > 0 ? (
-          club.courts.filter((c: any) => c.is_active).map((court: any) => {
+          (() => {
+            const activeCourts = club.courts.filter((c: any) => c.is_active);
+
+            if (activeCourts.length === 0) {
+              console.warn('⚠️ Nenhuma quadra ativa encontrada');
+              return (
+                <div className="text-center py-8 text-gray-500">
+                  <p>Nenhuma quadra ativa no momento</p>
+                  <p className="text-sm mt-2">Total de quadras: {club.courts.length}</p>
+                </div>
+              );
+            }
+
+            return activeCourts.map((court: any) => {
             console.log('🎾 Renderizando quadra:', court.name, court);
             return (
             <div key={court.id} className="bg-white p-4 rounded-xl shadow-sm mb-4 border border-gray-100">
@@ -180,14 +212,14 @@ export const ClubDetails = () => {
     ))}
   </div>
 </div>
-              <div className="grid grid-cols-4 gap-2 mt-4">
-                 {/* Slots de horários */}
-              </div>
             </div>
           );
-          })
+          });
+          })()
         ) : (
-          <div className="text-gray-500">Nenhuma quadra disponível</div>
+          <div className="text-center py-8 text-gray-500">
+            <p>Nenhuma quadra cadastrada</p>
+          </div>
         )}
       </div>
       </div>
