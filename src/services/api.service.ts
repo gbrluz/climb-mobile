@@ -10,8 +10,10 @@ const checkApiHealth = async (): Promise<boolean> => {
   if (apiAvailable !== null) return apiAvailable;
 
   try {
-    await bookingsApi.get('/health', { timeout: 1000 });
+    // Tenta buscar clubes para verificar se API está disponível
+    await bookingsApi.get('/clubs', { timeout: 2000 });
     apiAvailable = true;
+    console.log('✅ API conectada com sucesso!');
     return true;
   } catch {
     console.warn('📦 API não disponível. Usando dados mockados para desenvolvimento.');
@@ -47,8 +49,11 @@ export const ApiService = {
     }
 
     try {
-      const { data } = await bookingsApi.get<Club>(`/clubs/${id}`);
-      return data;
+      // A API não tem endpoint /clubs/:id, então busca todos e filtra
+      const { data } = await bookingsApi.get<Club[]>('/clubs');
+      const club = data.find(c => c.id === id);
+      if (!club) throw new Error('Club not found');
+      return club;
     } catch {
       const club = mockClubs.find(c => c.id === id);
       if (!club) throw new Error('Club not found');
@@ -66,7 +71,8 @@ export const ApiService = {
     try {
       const { data } = await bookingsApi.get<Court[]>(`/clubs/${clubId}/courts`);
       return data;
-    } catch {
+    } catch (error) {
+      console.error('Erro ao buscar quadras:', error);
       return mockCourts[clubId] || [];
     }
   },
