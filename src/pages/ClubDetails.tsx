@@ -30,16 +30,18 @@ export const ClubDetails = () => {
   });
 
   // Gera horários disponíveis baseado no clube e slot da quadra
-  const generateTimeSlots = (court: Court) => {
+  const generateTimeSlots = (court: any) => {
     const openingTime = club?.opening_time || '08:00';
     const closingTime = club?.closing_time || '22:00';
-    const slotDuration = court.slot_duration;
+    // Usa 60 minutos como padrão se slot_duration for undefined
+    const slotDuration = court.slot_duration || 60;
 
     console.log('🕐 Gerando horários:', {
       club: club?.name,
       openingTime,
       closingTime,
       slotDuration,
+      slotDurationOriginal: court.slot_duration,
       court: court.name
     });
 
@@ -120,12 +122,14 @@ export const ClubDetails = () => {
           <div>Error: {error ? `❌ ${error.message}` : '✅'}</div>
           <div>Club: {club ? `✅ ${club.name}` : '❌'}</div>
           <div>Courts Total: {club?.courts?.length || 0}</div>
-          <div>Courts Active: {club?.courts?.filter((c: any) => c.is_active).length || 0}</div>
+          <div>Courts Active (strict): {club?.courts?.filter((c: any) => c.is_active === true).length || 0}</div>
+          <div>Courts Active (lenient): {club?.courts?.filter((c: any) => c.is_active !== false).length || 0}</div>
           {club?.courts && club.courts.length > 0 && (
             <div className="mt-1">
-              Courts: {club.courts.map((c: any) =>
-                `${c.name}(active:${c.is_active}, slot:${c.slot_duration}min, price:R$${c.base_price})`
-              ).join(' | ')}
+              Courts: {club.courts.map((c: any) => {
+                const hasData = c.slot_duration && c.base_price && c.is_active !== undefined;
+                return `${c.name}(${hasData ? '✅' : '❌'} active:${c.is_active}, slot:${c.slot_duration}, price:${c.base_price})`;
+              }).join(' | ')}
             </div>
           )}
         </div>
@@ -186,7 +190,8 @@ export const ClubDetails = () => {
         })()}
         {club?.courts && club.courts.length > 0 ? (
           (() => {
-            const activeCourts = club.courts.filter((c: any) => c.is_active);
+            // Trata undefined como ativo (para compatibilidade com dados incompletos)
+            const activeCourts = club.courts.filter((c: any) => c.is_active !== false);
 
             if (activeCourts.length === 0) {
               console.warn('⚠️ Nenhuma quadra ativa encontrada');
@@ -200,8 +205,17 @@ export const ClubDetails = () => {
 
             return activeCourts.map((court: any) => {
             console.log('🎾 Renderizando quadra:', court.name, court);
+
+            // Detecta se os dados estão incompletos
+            const hasIncompleteData = !court.slot_duration || !court.base_price;
+
             return (
             <div key={court.id} className="bg-white p-4 rounded-xl shadow-sm mb-4 border border-gray-100">
+              {hasIncompleteData && (
+                <div className="mb-2 p-2 bg-orange-50 border border-orange-200 rounded text-xs text-orange-700">
+                  ⚠️ Dados incompletos no backend (usando valores padrão)
+                </div>
+              )}
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="font-bold text-gray-800">{court.name}</h3>
@@ -210,7 +224,7 @@ export const ClubDetails = () => {
                   </p>
                 </div>
                 <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs font-bold">
-                   R$ {court.base_price ? parseFloat(court.base_price).toFixed(0) : '0'}/{court.slot_duration || 0}min
+                   R$ {court.base_price ? parseFloat(court.base_price).toFixed(0) : '50'}/{court.slot_duration || 60}min
                 </span>
               </div>
               
