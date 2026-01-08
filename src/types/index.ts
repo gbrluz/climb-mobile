@@ -1,6 +1,6 @@
 // Tipos da API climb-bookings-api
 
-export interface Club {
+export type Club = {
   id: string;
   name: string;
   address: string;
@@ -17,7 +17,7 @@ export interface Club {
   updated_at?: string;
 }
 
-export interface Court {
+export type Court = {
   id: string;
   club_id: string;
   name: string;
@@ -30,7 +30,7 @@ export interface Court {
   updated_at?: string;
 }
 
-export interface Booking {
+export type Booking = {
   id: string;
   court_id: string;
   user_id: string;
@@ -48,7 +48,7 @@ export interface Booking {
   club?: Club;
 }
 
-export interface User {
+export type User = {
   id: string;
   name: string;
   email: string;
@@ -61,18 +61,18 @@ export interface User {
   updated_at?: string;
 }
 
-export interface ClubWithCourts extends Club {
+export type ClubWithCourts = Club & {
   courts: Court[];
 }
 
-export interface CreateBookingDto {
+export type CreateBookingDto = {
   court_id: string;
   start_time: string;
   duration_minutes?: number;
   notes?: string;
 }
 
-export interface ApiError {
+export type ApiError = {
   message: string;
   statusCode?: number;
   error?: string;
