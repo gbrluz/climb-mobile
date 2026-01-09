@@ -1,6 +1,7 @@
 // src/pages/Home.tsx
 import { useClubs } from '../hooks/useClubs';
 import { ClubCard } from '../components/ui/ClubCard';
+import { UpperNav } from '../components/ui/UpperNav';
 import { Calendar, GraduationCap, Trophy, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,7 +10,9 @@ export const Home = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="space-y-8 pb-10">
+    <div className="min-h-screen bg-gray-50">
+      <UpperNav />
+      <div className="space-y-8 pb-10 px-4 pt-4">
       {/* 1. Header de Boas-vindas */}
       <section className="pt-4">
         <h1 className="text-2xl font-black text-gray-900">Bem-vindo, Gabriel!</h1>
@@ -52,6 +55,7 @@ export const Home = () => {
           )}
         </div>
       </section>
+      </div>
     </div>
   );
 };

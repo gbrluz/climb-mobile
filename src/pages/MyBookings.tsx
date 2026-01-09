@@ -2,6 +2,7 @@ import { useBookings } from '../hooks/useBookings';
 import { useCancelBooking } from '../hooks/useCancelBooking';
 import { LoadingPage } from '../components/ui/LoadingSpinner';
 import { ErrorPage } from '../components/ui/ErrorMessage';
+import { PageHeader } from '../components/ui/PageHeader';
 import { Calendar, Clock, MapPin, XCircle, CheckCircle } from 'lucide-react';
 import type { Booking } from '../types';
 import { useState } from 'react';
@@ -43,11 +44,7 @@ export const MyBookings = () => {
 
   return (
     <div className="pb-24 min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white p-6 pb-4 border-b border-gray-100">
-        <h1 className="text-2xl font-black text-gray-900">Minhas Reservas</h1>
-        <p className="text-gray-500 font-medium">Gerencie suas reservas</p>
-      </div>
+      <PageHeader title="Minhas Reservas" />
 
       <div className="p-4 space-y-6">
         {/* Próximas Reservas */}
