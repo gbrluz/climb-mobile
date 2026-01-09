@@ -16,8 +16,35 @@ export const ClubDetails = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedCourt, setSelectedCourt] = useState<Court | null>(null);
   const [selectedTime, setSelectedTime] = useState<string>('');
+  const [showOnlyAvailable, setShowOnlyAvailable] = useState(true);
 
   const { mutate: createBooking, isPending } = useCreateBooking();
+
+  // Gera os próximos 7 dias para seleção
+  const getNext7Days = () => {
+    const days = [];
+    const today = new Date();
+
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+
+      const dayNames = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
+      const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+      days.push({
+        dayOfWeek: dayNames[date.getDay()],
+        dayNumber: date.getDate(),
+        month: monthNames[date.getMonth()],
+        fullDate: date.toISOString().split('T')[0],
+        isToday: i === 0
+      });
+    }
+
+    return days;
+  };
+
+  const weekDays = getNext7Days();
 
   // Gera horários disponíveis baseado no clube e slot da quadra
   const generateTimeSlots = (court: any) => {
@@ -106,15 +133,68 @@ export const ClubDetails = () => {
         </div>
 
       <div className="p-4">
-        {/* Seletor de Data Simples */}
-        <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
-          <Calendar size={20} className="text-blue-600" />
-          <input 
-            type="date" 
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className="font-bold text-gray-700 focus:outline-none"
-          />
+        {/* Abas de Navegação */}
+        <div className="flex gap-4 mb-6 border-b border-gray-200">
+          <button className="pb-3 px-1 font-bold text-blue-600 border-b-2 border-blue-600">
+            Reservar
+          </button>
+          <button className="pb-3 px-1 font-semibold text-gray-400">
+            Jogos Abertos
+          </button>
+          <button className="pb-3 px-1 font-semibold text-gray-400">
+            Torneios/Ligas
+          </button>
+        </div>
+
+        {/* Seletor de Data com Scroll Horizontal */}
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <button className="p-2 hover:bg-gray-100 rounded-full">
+              <Calendar size={20} className="text-gray-600" />
+            </button>
+            <div className="flex gap-2 overflow-x-auto pb-2 flex-1 scrollbar-hide">
+              {weekDays.map((day) => (
+                <button
+                  key={day.fullDate}
+                  onClick={() => setSelectedDate(day.fullDate)}
+                  className={`flex flex-col items-center justify-center min-w-[60px] py-2 px-3 rounded-lg transition-all ${
+                    selectedDate === day.fullDate
+                      ? 'bg-gray-900 text-white'
+                      : 'bg-white text-gray-700 border border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <span className={`text-xs font-semibold ${selectedDate === day.fullDate ? 'text-white' : 'text-gray-500'}`}>
+                    {day.dayOfWeek}.
+                  </span>
+                  <span className="text-xl font-bold my-1">
+                    {day.dayNumber}
+                  </span>
+                  <span className={`text-xs ${selectedDate === day.fullDate ? 'text-white' : 'text-gray-500'}`}>
+                    {day.month}.
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Toggle Mostrar Apenas Disponíveis */}
+          <div className="flex items-center justify-between py-3 px-4 bg-gray-50 rounded-lg">
+            <span className="text-sm font-medium text-gray-700">
+              Mostrar apenas as horas disponíveis
+            </span>
+            <button
+              onClick={() => setShowOnlyAvailable(!showOnlyAvailable)}
+              className={`relative w-12 h-6 rounded-full transition-colors ${
+                showOnlyAvailable ? 'bg-blue-600' : 'bg-gray-300'
+              }`}
+            >
+              <div
+                className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                  showOnlyAvailable ? 'transform translate-x-6' : ''
+                }`}
+              />
+            </button>
+          </div>
         </div>
 
         {/* Listagem de Quadras e Seus Horários */}
