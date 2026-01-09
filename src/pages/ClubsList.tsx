@@ -42,24 +42,19 @@ export const ClubsList = () => {
       </div>
 
       {/* Lista de Resultados */}
-      <div className="p-4 space-y-6">
+      <div className="p-4 space-y-4">
         {isLoading ? (
-          <p>Carregando clubes...</p>
+          <p className="text-gray-500 text-sm">Carregando clubes...</p>
         ) : (
           clubs?.map((club: any) => (
-            <div key={club.id} className="relative">
-              <ClubCard 
-                name={club.name}
-                address={`${club.city}, ${club.state}`}
-                image={club.images?.[0]}
-                rating={4.8}
-                onClick={() => navigate(`/club/${club.id}`)}
-              />
-              {/* Info de distância como no Playtomic */}
-              <div className="absolute bottom-20 left-4 text-xs font-medium text-gray-500">
-                2km - {club.city}
-              </div>
-            </div>
+            <ClubCard
+              key={club.id}
+              name={club.name}
+              address={`${club.city}, ${club.state}`}
+              image={club.images?.[0]}
+              onClick={() => navigate(`/club/${club.id}`)}
+              distance="2km"
+            />
           ))
         )}
       </div>

@@ -34,18 +34,18 @@ export const Home = () => {
         </div>
 
         {/* Container do Scroll Horizontal */}
-        <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
+        <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-4 px-4 pb-2">
           {isLoading ? (
-            <p>Carregando clubes...</p>
+            <p className="text-gray-500 text-sm">Carregando clubes...</p>
           ) : (
             clubs?.map((club: any) => (
-              <div key={club.id} className="snap-start min-w-70 max-w-70">
-                <ClubCard 
+              <div key={club.id} className="snap-start min-w-[280px] max-w-[280px]">
+                <ClubCard
                   name={club.name}
                   address={`${club.city}, ${club.state}`}
-                  rating={4.8}
                   image={club.images?.[0]}
                   onClick={() => navigate(`/club/${club.id}`)}
+                  distance="2km"
                 />
               </div>
             ))

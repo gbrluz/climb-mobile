@@ -1,22 +1,22 @@
 // src/components/ui/ClubCard.tsx
-import { MapPin, Star, Calendar } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { useState } from 'react';
 
 interface ClubCardProps {
   name: string;
   address: string;
-  rating: number;
   image: string;
   onClick: () => void;
+  distance?: string;
 }
 
-export const ClubCard = ({ name, address, rating, image, onClick }: ClubCardProps) => {
+export const ClubCard = ({ name, address, image, onClick, distance }: ClubCardProps) => {
   const [imageError, setImageError] = useState(false);
 
   return (
     <div
       onClick={onClick}
-      className="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 cursor-pointer active:scale-95 transition-transform"
+      className="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 active:scale-[0.98] transition-transform touch-manipulation"
     >
       <div className="relative h-48 bg-gradient-to-br from-blue-400 to-blue-600">
         {image && !imageError ? (
@@ -31,14 +31,11 @@ export const ClubCard = ({ name, address, rating, image, onClick }: ClubCardProp
             <Calendar size={40} className="text-white opacity-30" />
           </div>
         )}
-        <div className="absolute top-3 right-3 bg-white/90 px-2 py-1 rounded-lg flex items-center gap-1">
-          <Star size={14} className="fill-yellow-400 text-yellow-400" />
-          <span className="text-xs font-bold">{rating || '5.0'}</span>
-        </div>
       </div>
       <div className="p-4">
-        <h3 className="font-bold text-xl text-gray-900">{name}</h3>
-        <p className="text-sm text-gray-500 mt-1 truncate">
+        <h3 className="font-bold text-lg text-gray-900">{name}</h3>
+        <p className="text-sm text-gray-500 mt-1">
+          {distance && <span className="font-medium">{distance} · </span>}
           {address || 'Endereço não informado'}
         </p>
       </div>
