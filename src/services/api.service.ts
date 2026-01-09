@@ -42,9 +42,9 @@ export const ApiService = {
     await bookingsApi.delete(`/bookings/${id}`);
   },
 
-  // Users
+  // Players
   async getUserProfile(): Promise<User> {
-    const { data } = await bookingsApi.get<User>('/users/me');
+    const { data } = await bookingsApi.get<User>('/players/me');
     return data;
   },
 };
