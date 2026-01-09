@@ -4,6 +4,12 @@ import { Link, useLocation } from 'react-router-dom';
 export const BottomNav = () => {
   const { pathname } = useLocation();
 
+  // Ocultar BottomNav nas páginas de autenticação
+  const authPages = ['/login', '/register'];
+  if (authPages.includes(pathname)) {
+    return null;
+  }
+
   const navItems = [
     { label: 'Início', icon: Home, path: '/' },
     { label: 'Partidas', icon: Search, path: '/find-matches' },

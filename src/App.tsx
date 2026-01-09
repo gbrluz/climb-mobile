@@ -6,6 +6,8 @@ import { ClubDetails } from './pages/ClubDetails';
 import { ClubsList } from './pages/ClubsList';
 import { MyBookings } from './pages/MyBookings';
 import { Profile } from './pages/Profile';
+import { Login } from './pages/Login';
+import { Register } from './pages/Register';
 
 // Inicializa o cliente do React Query para gerenciar cache das APIs
 const queryClient = new QueryClient();
@@ -16,10 +18,15 @@ function App() {
       <Router>
         {/* Container Principal: Ocupa a tela toda e respeita o index.css */}
         <div className="flex flex-col h-screen-dynamic bg-gray-50 overflow-hidden">
-          
+
           {/* Área de Conteúdo com scroll independente e Safe Area superior */}
-          <main className="flex-1 overflow-y-auto px-4 pt-safe-top pb-20">
+          <main className="flex-1 overflow-y-auto">
             <Routes>
+              {/* Rotas Públicas (Auth) */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+
+              {/* Rotas Protegidas */}
               <Route path="/" element={<Home />} />
               <Route path="/find-matches" element={<MyBookings />} />
               <Route path="/auctions" element={<div className="p-6 text-center"><h2 className="text-xl font-bold">Leilões em breve!</h2></div>} />
