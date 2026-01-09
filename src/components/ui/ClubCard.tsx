@@ -1,5 +1,6 @@
 // src/components/ui/ClubCard.tsx
-import { MapPin, Star } from 'lucide-react';
+import { MapPin, Star, Calendar } from 'lucide-react';
+import { useState } from 'react';
 
 interface ClubCardProps {
   name: string;
@@ -10,17 +11,26 @@ interface ClubCardProps {
 }
 
 export const ClubCard = ({ name, address, rating, image, onClick }: ClubCardProps) => {
+  const [imageError, setImageError] = useState(false);
+
   return (
-    <div 
+    <div
       onClick={onClick}
       className="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 cursor-pointer active:scale-95 transition-transform"
     >
-      <div className="relative h-48 bg-gray-200"> {/* Placeholder cinza se não houver imagem */}
-        <img 
-          src={image || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCQa90Egj9nUWlylRmVaVOdBXCJKWEM6cRfA&s?q=80&w=800'} // Imagem padrão
-          alt={name} 
-          className="w-full h-48 object-cover" 
-        />
+      <div className="relative h-48 bg-gradient-to-br from-blue-400 to-blue-600">
+        {image && !imageError ? (
+          <img
+            src={image}
+            alt={name}
+            className="w-full h-48 object-cover"
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          <div className="w-full h-48 flex items-center justify-center">
+            <Calendar size={40} className="text-white opacity-30" />
+          </div>
+        )}
         <div className="absolute top-3 right-3 bg-white/90 px-2 py-1 rounded-lg flex items-center gap-1">
           <Star size={14} className="fill-yellow-400 text-yellow-400" />
           <span className="text-xs font-bold">{rating || '5.0'}</span>

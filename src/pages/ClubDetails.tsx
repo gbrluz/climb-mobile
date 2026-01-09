@@ -17,6 +17,7 @@ export const ClubDetails = () => {
   const [selectedCourt, setSelectedCourt] = useState<Court | null>(null);
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [showOnlyAvailable, setShowOnlyAvailable] = useState(true);
+  const [imageError, setImageError] = useState(false);
 
   const { mutate: createBooking, isPending } = useCreateBooking();
 
@@ -111,11 +112,22 @@ export const ClubDetails = () => {
     <>
       <div className="pb-24">
         {/* Header com Foto do Clube */}
-        <div className="h-56 relative bg-gray-200">
-          <img
-            src={club?.images?.[0] || ''}
-            className="w-full h-full object-cover"
-          />
+        <div className="h-56 relative bg-gradient-to-br from-blue-500 to-blue-700">
+          {club?.images?.[0] && !imageError ? (
+            <img
+              src={club.images[0]}
+              alt={club.name}
+              className="w-full h-full object-cover"
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <div className="text-white text-center">
+                <Calendar size={48} className="mx-auto mb-2 opacity-50" />
+                <p className="text-sm opacity-75">Imagem não disponível</p>
+              </div>
+            </div>
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
 
           {/* Botão Voltar */}
