@@ -14,11 +14,11 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
-        {/* Container Principal: Ocupa a tela toda e respeita o index.css */}
-        <div className="flex flex-col h-screen-dynamic bg-gray-50 overflow-hidden">
-          
-          {/* Área de Conteúdo com scroll independente e Safe Area superior */}
-          <main className="flex-1 overflow-y-auto px-4 pt-safe-top pb-20">
+        {/* Container Principal: Ocupa a tela toda sem padding */}
+        <div className="flex flex-col h-screen bg-gray-50">
+
+          {/* Área de Conteúdo com scroll independente */}
+          <main className="flex-1 overflow-y-auto">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/find-matches" element={<MyBookings />} />
@@ -29,7 +29,7 @@ function App() {
             </Routes>
           </main>
 
-          {/* Navegação fixa no rodapé que você já criou */}
+          {/* Navegação fixa no rodapé */}
           <BottomNav />
         </div>
       </Router>
