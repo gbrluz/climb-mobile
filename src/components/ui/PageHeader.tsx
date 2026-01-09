@@ -19,12 +19,7 @@ export const PageHeader = ({ title, onBack }: PageHeaderProps) => {
   };
 
   return (
-    <div
-      className="bg-white px-4 pb-3 flex items-center gap-3 border-b border-gray-200 sticky top-0 z-50"
-      style={{
-        paddingTop: 'max(0.75rem, env(safe-area-inset-top))'
-      }}
-    >
+    <div className="bg-white px-4 py-3 flex items-center gap-3 border-b border-gray-200 sticky top-0 z-50 safe-area-top">
       <button
         onClick={handleBack}
         className="p-2 -ml-2 active:bg-gray-100 rounded-full transition-colors touch-manipulation"

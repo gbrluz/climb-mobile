@@ -3,12 +3,7 @@ import { Bell, Menu } from 'lucide-react';
 
 export const UpperNav = () => {
   return (
-    <div
-      className="bg-blue-600 px-4 pb-4 flex items-center justify-between sticky top-0 z-50"
-      style={{
-        paddingTop: 'max(1rem, env(safe-area-inset-top))'
-      }}
-    >
+    <div className="bg-blue-600 px-4 py-4 flex items-center justify-between sticky top-0 z-50 safe-area-top">
       {/* Logo */}
       <div className="flex items-center">
         <h1 className="text-white text-xl font-black tracking-wider">CLIMB</h1>
