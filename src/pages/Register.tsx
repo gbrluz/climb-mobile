@@ -1,10 +1,21 @@
 // src/pages/Register.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, User, Mail, Lock, Phone, Calendar as CalendarIcon } from 'lucide-react';
 
 type WeekAvailability = {
   [key: string]: ('morning' | 'afternoon' | 'evening')[];
+};
+
+type Estado = {
+  id: number;
+  sigla: string;
+  nome: string;
+};
+
+type Cidade = {
+  id: number;
+  nome: string;
 };
 
 export const Register = () => {
@@ -30,6 +41,11 @@ export const Register = () => {
   const [state, setState] = useState('');
   const [city, setCity] = useState('');
 
+  // Estados e Cidades da API do IBGE
+  const [estados, setEstados] = useState<Estado[]>([]);
+  const [cidades, setCidades] = useState<Cidade[]>([]);
+  const [loadingCidades, setLoadingCidades] = useState(false);
+
   // Step 4: Disponibilidade
   const [availability, setAvailability] = useState<WeekAvailability>({
     monday: [],
@@ -40,6 +56,47 @@ export const Register = () => {
     saturday: [],
     sunday: [],
   });
+
+  // Buscar estados ao montar o componente
+  useEffect(() => {
+    const fetchEstados = async () => {
+      try {
+        const response = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome');
+        const data = await response.json();
+        setEstados(data);
+      } catch (error) {
+        console.error('Erro ao buscar estados:', error);
+      }
+    };
+
+    fetchEstados();
+  }, []);
+
+  // Buscar cidades quando o estado mudar
+  useEffect(() => {
+    if (state) {
+      const fetchCidades = async () => {
+        setLoadingCidades(true);
+        try {
+          const response = await fetch(
+            `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${state}/municipios?orderBy=nome`
+          );
+          const data = await response.json();
+          setCidades(data);
+          setCity(''); // Limpar cidade selecionada ao trocar de estado
+        } catch (error) {
+          console.error('Erro ao buscar cidades:', error);
+        } finally {
+          setLoadingCidades(false);
+        }
+      };
+
+      fetchCidades();
+    } else {
+      setCidades([]);
+      setCity('');
+    }
+  }, [state]);
 
   const weekDays = [
     { key: 'monday', label: 'Segunda' },
@@ -266,7 +323,6 @@ export const Register = () => {
                 <option value="">Selecione</option>
                 <option value="male">Masculino</option>
                 <option value="female">Feminino</option>
-                <option value="other">Outro</option>
               </select>
             </div>
 
@@ -303,6 +359,7 @@ export const Register = () => {
                 <option value="">Selecione</option>
                 <option value="left">Esquerda</option>
                 <option value="right">Direita</option>
+                <option value="both">Ambos</option>
               </select>
             </div>
 
@@ -329,9 +386,13 @@ export const Register = () => {
               >
                 <option value="">Selecione sua categoria</option>
                 <option value="beginner">Iniciante</option>
-                <option value="intermediate">Intermediário</option>
-                <option value="advanced">Avançado</option>
-                <option value="professional">Profissional</option>
+                <option value="1">1ª</option>
+                <option value="2">2ª</option>
+                <option value="3">3ª</option>
+                <option value="4">4ª</option>
+                <option value="5">5ª</option>
+                <option value="6">6ª</option>
+                <option value="7">7ª</option>
               </select>
               <p className="text-xs text-gray-500 mt-1">
                 Seus primeiros 5 jogos terão impacto maior no ranking
@@ -345,12 +406,12 @@ export const Register = () => {
                 onChange={(e) => setState(e.target.value)}
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-600 focus:outline-none transition-colors"
               >
-                <option value="">Selecione</option>
-                <option value="SP">São Paulo</option>
-                <option value="RJ">Rio de Janeiro</option>
-                <option value="MG">Minas Gerais</option>
-                <option value="RS">Rio Grande do Sul</option>
-                {/* Adicionar outros estados */}
+                <option value="">Selecione o estado</option>
+                {estados.map((estado) => (
+                  <option key={estado.id} value={estado.sigla}>
+                    {estado.nome}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -359,14 +420,21 @@ export const Register = () => {
               <select
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-600 focus:outline-none transition-colors"
+                disabled={!state || loadingCidades}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-600 focus:outline-none transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed"
               >
-                <option value="">Selecione</option>
-                <option value="São Paulo">São Paulo</option>
-                <option value="Rio de Janeiro">Rio de Janeiro</option>
-                <option value="Belo Horizonte">Belo Horizonte</option>
-                <option value="Porto Alegre">Porto Alegre</option>
-                {/* Adicionar outras cidades */}
+                <option value="">
+                  {!state
+                    ? 'Selecione um estado primeiro'
+                    : loadingCidades
+                      ? 'Carregando cidades...'
+                      : 'Selecione a cidade'}
+                </option>
+                {cidades.map((cidade) => (
+                  <option key={cidade.id} value={cidade.nome}>
+                    {cidade.nome}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
